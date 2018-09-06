@@ -1,9 +1,11 @@
 package coordinator
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"github.com/crypt0cloud/core/connections"
 	"github.com/crypt0cloud/core/tools"
 	"github.com/onlyangel/apihandlers"
@@ -27,6 +29,7 @@ func init() {
 	//http.HandleFunc("/api/api",api_handler)
 	http.HandleFunc("/api/coord/register_masterkey", apihandlers.RecoverApi(coord_registerMasterKey))
 	http.HandleFunc("/api/coord/register_nodes", apihandlers.RecoverApi(coord_registerNewNode))
+	http.HandleFunc("/api/coord/verify_with_pairs", apihandlers.RecoverApi(coord_verifyWithPairs))
 
 }
 
@@ -138,4 +141,44 @@ func coord_registerNewNode(w http.ResponseWriter, r *http.Request) {
 
 		db.Coord_Insert_ExternalNode(nodeID)
 	}
+}
+
+func coord_verifyWithPairs(w http.ResponseWriter, r *http.Request) {
+	db := model.Open(r, "")
+	arr := db.Coord_GetRandomNodeIdentification(1)
+
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(r.Body)
+	bts := buf.Bytes()
+
+	sino := true
+
+	for _, node := range arr {
+		response := connections.PostRemote(r, "http://"+node.Endpoint+"/api/v1/pair_verification", bts)
+		responsestr := string(response)
+
+		error := &struct {
+			Error string
+		}{
+			Error: "",
+		}
+		err := json.Unmarshal(response, error)
+		apihandlers.PanicIfNil(err)
+
+		if error.Error != "" {
+			apihandlers.PanicWithMsg(responsestr)
+		}
+
+		if responsestr == "false" {
+			sino = false
+		}
+
+	}
+
+	if sino {
+		fmt.Fprintf(w, "true")
+	} else {
+		fmt.Fprintf(w, "false")
+	}
+
 }

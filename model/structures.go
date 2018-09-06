@@ -16,6 +16,7 @@ type ModelDatabase interface {
 	Coord_GetKey() *MasterKey
 
 	Coord_Insert_ExternalNode(node *NodeIdentification)
+	Coord_GetRandomNodeIdentification(limit int) []NodeIdentification
 
 	GetNodeId() *NodeIdentification
 	IsRegisteredNodeID() bool
@@ -32,10 +33,6 @@ type MasterKey struct {
 	URL                string
 	CoordinatorPublic  []byte
 	CoordinatorPrivate []byte
-}
-
-type ChainNode struct {
-	URL string
 }
 
 /**
