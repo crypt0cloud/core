@@ -10,7 +10,6 @@ import (
 )
 
 func identification_handlers() {
-	//http.HandleFunc("/api/v1/last_block",apihandlers.Recover(identification_getNodeId))
 	http.HandleFunc("/api/v1/node_id", apihandlers.RecoverApi(identification_getNodeId))
 }
 

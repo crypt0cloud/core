@@ -32,10 +32,10 @@ func init() {
 	http.HandleFunc("/api/coord/register_masterkey", apihandlers.RecoverApi(coord_registerMasterKey))
 	http.HandleFunc("/api/coord/register_nodes", apihandlers.RecoverApi(coord_registerNewNode))
 	http.HandleFunc("/api/coord/verify_with_peers", apihandlers.RecoverApi(coord_verifyWithPeers))
-	http.HandleFunc("/api/v1/coord/add_app", apihandlers.Recover(coord_addApp))
+	http.HandleFunc("/api/v1/coord/add_app", apihandlers.RecoverApi(coord_addApp))
 
 	//TODO: change method and WS
-	http.HandleFunc("/api/v1/coord/scale_with_pairs", apihandlers.Recover(coord_scaleWithPairs))
+	http.HandleFunc("/api/v1/coord/scale_with_peers", apihandlers.RecoverApi(coord_scaleWithPeers))
 }
 
 func coord_registerMasterKey(w http.ResponseWriter, r *http.Request) {
@@ -254,7 +254,7 @@ func coord_addApp(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func coord_scaleWithPairs(w http.ResponseWriter, r *http.Request) {
+func coord_scaleWithPeers(w http.ResponseWriter, r *http.Request) {
 	db := model.Open(r, "")
 	crypto.Validate_criptoTransaction(r.Body)
 

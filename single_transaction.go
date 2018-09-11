@@ -117,8 +117,8 @@ func transactions_postSingleTransaction(w http.ResponseWriter, r *http.Request) 
 	}
 	myself := db.GetNodeId()
 
-	if t.ToNode.PublicKey != myself.PublicKey {
-		apihandlers.PanicWithMsg("Different Target Node")
+	if t.FromNode.PublicKey != myself.PublicKey {
+		apihandlers.PanicWithMsg("Different Origin Node")
 	}
 
 	if t.SignKind != "__REGISTERNODE" {

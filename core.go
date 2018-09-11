@@ -27,6 +27,7 @@ func init() {
 
 	identification_handlers()
 	transactions_handle()
+	contracts_handler()
 }
 
 func warmup(w http.ResponseWriter, r *http.Request) {
