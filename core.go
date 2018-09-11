@@ -26,6 +26,7 @@ func init() {
 	http.HandleFunc("/api/v1/pair_verification", pair_verification)
 
 	identification_handlers()
+	transactions_handle()
 }
 
 func warmup(w http.ResponseWriter, r *http.Request) {

@@ -58,3 +58,13 @@ func PostRemote(r *http.Request, url string, data []byte) []byte {
 
 	return body
 }
+
+func ValidateTransactionWithPeers(r *http.Request, transaction *md.Transaction, fromnode md.NodeIdentification) bool {
+
+	jsonstr, err := json.Marshal(transaction)
+	apihandlers.PanicIfNotNil(err)
+
+	response := PostRemote(r, "http://"+fromnode.Endpoint+"/api/v1/coord/verify_with_peers", jsonstr)
+
+	return string(response) == "true"
+}

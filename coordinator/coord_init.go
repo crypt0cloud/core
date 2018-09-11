@@ -31,7 +31,7 @@ func init() {
 	//http.HandleFunc("/api/api",api_handler)
 	http.HandleFunc("/api/coord/register_masterkey", apihandlers.RecoverApi(coord_registerMasterKey))
 	http.HandleFunc("/api/coord/register_nodes", apihandlers.RecoverApi(coord_registerNewNode))
-	http.HandleFunc("/api/coord/verify_with_pairs", apihandlers.RecoverApi(coord_verifyWithPairs))
+	http.HandleFunc("/api/coord/verify_with_peers", apihandlers.RecoverApi(coord_verifyWithPeers))
 	http.HandleFunc("/api/v1/coord/add_app", apihandlers.Recover(coord_addApp))
 
 	//TODO: change method and WS
@@ -148,7 +148,7 @@ func coord_registerNewNode(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func coord_verifyWithPairs(w http.ResponseWriter, r *http.Request) {
+func coord_verifyWithPeers(w http.ResponseWriter, r *http.Request) {
 	db := model.Open(r, "")
 	arr := db.Coord_GetRandomNodeIdentification(1)
 

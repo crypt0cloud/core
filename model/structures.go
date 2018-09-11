@@ -1,6 +1,8 @@
 package model
 
-import "net/http"
+import (
+	"net/http"
+)
 
 type ModelConnector interface {
 	Open(r *http.Request, config string) ModelDatabase
@@ -33,6 +35,15 @@ type ModelDatabase interface {
 		Apps
 	*/
 	AppIdExists(r *http.Request, id string) bool
+
+	/*
+		Ledger
+	*/
+	NodeExists(r *http.Request) bool
+	GetCoordinatorKey(r *http.Request) *Transaction
+	UserSignExist(r *http.Request, id string) *Transaction
+	UserPayloadExist(r *http.Request, id string) *Transaction
+	InsertTransaction(r *http.Request, t *Transaction) *Transaction
 }
 
 /**
@@ -68,8 +79,9 @@ type Transaction struct {
 	Sign         string
 	Signer       string
 
-	Hash    string
-	Content string
+	Hash     string
+	Content  string
+	Creation int64
 
 	FromNode, ToNode NodeIdentification
 
