@@ -21,6 +21,13 @@ func FormValueEscaped(r *http.Request, variable string) string {
 
 func PrintJson(w http.ResponseWriter, v interface{}) {
 	jsonstr, err := json.Marshal(v)
-	apihandlers.PanicIfNil(err)
+	apihandlers.PanicIfNotNil(err)
 	fmt.Fprintf(w, "%s", string(jsonstr))
+}
+
+func API_Error(payload []byte) (bool, string) {
+	obj := new(apihandlers.ErrorType)
+	err := json.Unmarshal(payload, obj)
+	apihandlers.PanicIfNotNil(err)
+	return obj.Error != "", obj.Error
 }

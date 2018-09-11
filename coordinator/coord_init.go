@@ -7,6 +7,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/crypt0cloud/core/connections"
+	"github.com/crypt0cloud/core/crypto"
+	"github.com/crypt0cloud/core/crypto/signing"
 	"github.com/crypt0cloud/core/tools"
 	"github.com/onlyangel/apihandlers"
 	"golang.org/x/crypto/ed25519"
@@ -30,7 +32,10 @@ func init() {
 	http.HandleFunc("/api/coord/register_masterkey", apihandlers.RecoverApi(coord_registerMasterKey))
 	http.HandleFunc("/api/coord/register_nodes", apihandlers.RecoverApi(coord_registerNewNode))
 	http.HandleFunc("/api/coord/verify_with_pairs", apihandlers.RecoverApi(coord_verifyWithPairs))
+	http.HandleFunc("/api/v1/coord/add_app", apihandlers.Recover(coord_addApp))
 
+	//TODO: change method and WS
+	http.HandleFunc("/api/v1/coord/scale_with_pairs", apihandlers.Recover(coord_scaleWithPairs))
 }
 
 func coord_registerMasterKey(w http.ResponseWriter, r *http.Request) {
@@ -49,7 +54,7 @@ func coord_registerMasterKey(w http.ResponseWriter, r *http.Request) {
 	}
 
 	keyarr, err := base64.StdEncoding.DecodeString(key)
-	apihandlers.PanicIfNil(err)
+	apihandlers.PanicIfNotNil(err)
 
 	makey := new(md.MasterKey)
 	makey.MasterPublicKey = keyarr
@@ -75,13 +80,13 @@ func coord_registerNewNode(w http.ResponseWriter, r *http.Request) {
 	})
 	err := bodydecoder.Decode(cn)
 	defer r.Body.Close()
-	apihandlers.PanicIfNil(err)
+	apihandlers.PanicIfNotNil(err)
 
 	sign, err := base64.StdEncoding.DecodeString(cn.Sign)
-	apihandlers.PanicIfNil(err)
+	apihandlers.PanicIfNotNil(err)
 
 	content, err := base64.StdEncoding.DecodeString(cn.Content)
-	apihandlers.PanicIfNil(err)
+	apihandlers.PanicIfNotNil(err)
 
 	sha_256 := sha256.New()
 	sha_256.Write(content)
@@ -96,7 +101,7 @@ func coord_registerNewNode(w http.ResponseWriter, r *http.Request) {
 	})
 
 	err = json.Unmarshal(content, nodesdata)
-	apihandlers.PanicIfNil(err)
+	apihandlers.PanicIfNotNil(err)
 
 	for _, url := range nodesdata.Urls {
 		nodeID := connections.GetRemoteNodeCredentials(r, url)
@@ -115,7 +120,7 @@ func coord_registerNewNode(w http.ResponseWriter, r *http.Request) {
 		transaction.FromNode = *myNodeID
 
 		jsonstr, err := json.Marshal(transaction)
-		apihandlers.PanicIfNil(err)
+		apihandlers.PanicIfNotNil(err)
 
 		transaction.Content = base64.StdEncoding.EncodeToString(jsonstr)
 		sha_256.Write(jsonstr)
@@ -128,7 +133,7 @@ func coord_registerNewNode(w http.ResponseWriter, r *http.Request) {
 		transaction.Signer = transaction.AppID
 
 		jsonstr, err = json.Marshal(transaction)
-		apihandlers.PanicIfNil(err)
+		apihandlers.PanicIfNotNil(err)
 
 		traurl := "http://" + url + "/api/v1/post_single_transaction"
 		response := connections.PostRemote(r, traurl, jsonstr)
@@ -137,7 +142,7 @@ func coord_registerNewNode(w http.ResponseWriter, r *http.Request) {
 		log.Debugf(ctx, string(response))
 
 		err = json.Unmarshal(response, transaction)
-		apihandlers.PanicIfNil(err)
+		apihandlers.PanicIfNotNil(err)
 
 		db.Coord_Insert_ExternalNode(nodeID)
 	}
@@ -157,16 +162,116 @@ func coord_verifyWithPairs(w http.ResponseWriter, r *http.Request) {
 		response := connections.PostRemote(r, "http://"+node.Endpoint+"/api/v1/pair_verification", bts)
 		responsestr := string(response)
 
-		error := &struct {
-			Error string
-		}{
-			Error: "",
-		}
+		error := new(apihandlers.ErrorType)
 		err := json.Unmarshal(response, error)
-		apihandlers.PanicIfNil(err)
+		apihandlers.PanicIfNotNil(err)
 
 		if error.Error != "" {
 			apihandlers.PanicWithMsg(responsestr)
+		}
+
+		if responsestr == "false" {
+			sino = false
+		}
+
+	}
+
+	if sino {
+		fmt.Fprintf(w, "true")
+	} else {
+		fmt.Fprintf(w, "false")
+	}
+
+}
+
+func coord_addApp(w http.ResponseWriter, r *http.Request) {
+	db := model.Open(r, "")
+
+	//Validate criptographically transaction body
+	t := crypto.Validate_criptoTransaction(r.Body)
+
+	// Validate transaction data
+	if t.SignKind != "NewApp" {
+		apihandlers.PanicWithMsg("No New App transaction")
+	}
+
+	if t.Payload == "" {
+		apihandlers.PanicWithMsg("Error in sign credentials order")
+	}
+	if len(t.SignerKinds) != 1 {
+		apihandlers.PanicWithMsg("Single transaction should have a parent = 0")
+	}
+
+	if t.SignKind != t.SignerKinds[0] {
+		apihandlers.PanicWithMsg("Single transaction should have a parent = 0")
+	}
+
+	//todo verify the callback it is a url
+	if t.Callback == "" {
+		apihandlers.PanicWithMsg("There should be a callback")
+	}
+
+	if db.AppIdExists(r, t.AppID) {
+		apihandlers.PanicWithMsg("App sign already exists")
+	}
+
+	// Get get Keys
+	masterkey := db.Coord_GetKey()
+
+	// Get all nodes
+	arr := db.Coord_GetRandomNodeIdentification(0)
+
+	// get My node
+	mySelf := db.GetNodeId()
+
+	// Create the app in all the nodes
+	for _, node := range arr {
+
+		transaction := new(md.Transaction)
+		transaction.SignerKinds = []string{"__NEWAPP"}
+		transaction.SignKind = "__NEWAPP"
+		transaction.AppID = t.AppID
+		transaction.Parent = 0
+		transaction.Callback = t.Callback
+		transaction.Payload = "__NEWAPP"
+
+		transaction.ToNode = node
+		transaction.FromNode = *mySelf
+
+		signing.SignTransaction(transaction, *masterkey)
+
+		jsonstr, err := json.Marshal(transaction)
+		apihandlers.PanicIfNotNil(err)
+
+		response := connections.PostRemote(r, "http://"+node.Endpoint+"/api/v1/post_single_transaction", jsonstr)
+
+		err = json.Unmarshal(response, transaction)
+		apihandlers.PanicIfNotNil(err)
+
+	}
+
+	fmt.Fprintf(w, "OK")
+
+}
+
+func coord_scaleWithPairs(w http.ResponseWriter, r *http.Request) {
+	db := model.Open(r, "")
+	crypto.Validate_criptoTransaction(r.Body)
+
+	arr := db.Coord_GetRandomNodeIdentification(1)
+
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(r.Body)
+	bts := buf.Bytes()
+
+	sino := true
+
+	for _, node := range arr {
+		response := connections.PostRemote(r, "http://"+node.Endpoint+"/api/v1/pair_verification", bts)
+		responsestr := string(response)
+
+		if haserror, errorstr := tools.API_Error(response); haserror {
+			apihandlers.PanicWithMsg(errorstr)
 		}
 
 		if responsestr == "false" {

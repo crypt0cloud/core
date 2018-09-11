@@ -24,12 +24,12 @@ func init() {
 
 func GetRemoteNodeCredentials(r *http.Request, endpoint string) *md.NodeIdentification {
 	//TODO: CHANGE URL WHEN BLOCK CHANGES
-	response, err := CallRemote(r, "http://"+endpoint+"/api/v1/last_block")
-	apihandlers.PanicIfNil(err)
+	response, err := CallRemote(r, "http://"+endpoint+"/api/v1/node_id")
+	apihandlers.PanicIfNotNil(err)
 
 	nodeI := new(md.NodeIdentification)
 	err = json.Unmarshal(response, nodeI)
-	apihandlers.PanicIfNil(err)
+	apihandlers.PanicIfNotNil(err)
 
 	return nodeI
 }
@@ -49,10 +49,10 @@ func PostRemote(r *http.Request, url string, data []byte) []byte {
 	client := gae.GetClient(r)
 
 	resp, err := client.Post(url, "application/json", bytes.NewBuffer(data))
-	apihandlers.PanicIfNil(err)
+	apihandlers.PanicIfNotNil(err)
 
 	body, err := ioutil.ReadAll(resp.Body)
-	apihandlers.PanicIfNil(err)
+	apihandlers.PanicIfNotNil(err)
 
 	defer resp.Body.Close()
 

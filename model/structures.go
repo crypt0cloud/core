@@ -11,6 +11,9 @@ type ModelConnector interface {
 }
 
 type ModelDatabase interface {
+	/*
+		Coordinator
+	*/
 	Coord_MasterKeyExists() bool
 	Coord_InsertKey(key *MasterKey)
 	Coord_GetKey() *MasterKey
@@ -18,10 +21,18 @@ type ModelDatabase interface {
 	Coord_Insert_ExternalNode(node *NodeIdentification)
 	Coord_GetRandomNodeIdentification(limit int) []NodeIdentification
 
+	/*
+		Nodes
+	*/
 	GetNodeId() *NodeIdentification
 	IsRegisteredNodeID() bool
 	RegisteredNodeID(us *NodeIdentification)
 	SetupSetEndPointIfNull(endpoint string) bool
+
+	/*
+		Apps
+	*/
+	AppIdExists(r *http.Request, id string) bool
 }
 
 /**
@@ -43,6 +54,7 @@ type NodeIdentification struct {
 	PublicKey  string
 	PrivateKey string `json:",omitempty"`
 	Endpoint   string
+	Myself     bool
 }
 
 type Transaction struct {
