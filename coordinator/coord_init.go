@@ -112,7 +112,7 @@ func coord_registerNewNode(w http.ResponseWriter, r *http.Request) {
 		transaction.SignerKinds = []string{"__REGISTERNODE"}
 		transaction.SignKind = "__REGISTERNODE"
 		transaction.AppID = base64.StdEncoding.EncodeToString(mk.CoordinatorPublic)
-		transaction.Parent = 0
+		transaction.Parent = ""
 		transaction.Callback = "http://" + mk.URL
 		transaction.Payload = url
 
@@ -231,7 +231,7 @@ func coord_addApp(w http.ResponseWriter, r *http.Request) {
 		transaction.SignerKinds = []string{"__NEWAPP"}
 		transaction.SignKind = "__NEWAPP"
 		transaction.AppID = t.AppID
-		transaction.Parent = 0
+		transaction.Parent = ""
 		transaction.Callback = t.Callback
 		transaction.Payload = "__NEWAPP"
 

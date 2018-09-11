@@ -11,7 +11,7 @@ import (
 
 func transactions_handle() {
 
-	http.HandleFunc("/api/v1/post_single_transaction", apihandlers.Recover(transactions_postSingleTransaction))
+	http.HandleFunc("/api/v1/post_single_transaction", apihandlers.RecoverApi(transactions_postSingleTransaction))
 
 }
 
@@ -23,8 +23,8 @@ func transactions_postSingleTransaction(w http.ResponseWriter, r *http.Request) 
 
 	coord_key := db.GetCoordinatorKey(r)
 
-	if t.Parent != 0 {
-		apihandlers.PanicWithMsg("Single transaction should have a parent = 0")
+	if t.Parent != "" {
+		apihandlers.PanicWithMsg("Single transaction should have a parent = \"\"")
 	}
 	if t.Creation == 0 {
 		apihandlers.PanicWithMsg("Creation should be a current time")

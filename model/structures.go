@@ -43,7 +43,17 @@ type ModelDatabase interface {
 	GetCoordinatorKey(r *http.Request) *Transaction
 	UserSignExist(r *http.Request, id string) *Transaction
 	UserPayloadExist(r *http.Request, id string) *Transaction
+
+	/*
+		Transactions
+	*/
 	InsertTransaction(r *http.Request, t *Transaction) *Transaction
+	GetParentTransaction(r *http.Request, transactionID string) *Transaction
+	/*
+		Contracts
+	*/
+	InsertSignRequest(r *http.Request, t *Transaction) *Transaction
+	GetSignRequest(r *http.Request, id int64) *Transaction
 }
 
 /**
@@ -86,7 +96,7 @@ type Transaction struct {
 	FromNode, ToNode NodeIdentification
 
 	Payload     string
-	Parent      int64
+	Parent      string
 	ParentBlock int64 //TODO AGREGARIN SINGLE TRANSACTIONS, Y CONTRACT CREATION
 	AppID       string
 	SignerKinds []string

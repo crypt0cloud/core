@@ -31,3 +31,36 @@ func API_Error(payload []byte) (bool, string) {
 	apihandlers.PanicIfNotNil(err)
 	return obj.Error != "", obj.Error
 }
+
+func IsStringArrayEqual(a, b []string) bool {
+
+	if a == nil && b == nil {
+		return true
+	}
+
+	if a == nil || b == nil {
+		return false
+	}
+
+	if len(a) != len(b) {
+		return false
+	}
+
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+
+	return true
+}
+
+func IsStringInArray(original string, arr []string) bool {
+	sino := false
+	for i := range arr {
+		if original == arr[i] {
+			return true
+		}
+	}
+	return !sino
+}

@@ -23,7 +23,7 @@ func init() {
 	http.HandleFunc("/ping", apihandlers.RecoverApi(pong))
 	http.HandleFunc("/_ah/warmup", apihandlers.RecoverApi(warmup))
 
-	http.HandleFunc("/api/v1/pair_verification", pair_verification)
+	http.HandleFunc("/api/v1/pair_verification", apihandlers.RecoverApi(pair_verification))
 
 	identification_handlers()
 	transactions_handle()
