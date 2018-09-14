@@ -25,12 +25,16 @@ func init() {
 
 	http.HandleFunc("/api/v1/pair_verification", apihandlers.RecoverApi(pair_verification))
 
+	setup_hanlers()
 	identification_handlers()
 	transactions_handle()
 	contracts_handler()
 }
 
 func warmup(w http.ResponseWriter, r *http.Request) {
+	Warmup(r)
+}
+func Warmup(r *http.Request) {
 	db := model.Open(r, "")
 
 	if !db.IsRegisteredNodeID() {
@@ -43,7 +47,6 @@ func warmup(w http.ResponseWriter, r *http.Request) {
 
 		db.RegisteredNodeID(node)
 	}
-
 }
 
 func pong(w http.ResponseWriter, r *http.Request) {

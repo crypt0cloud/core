@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/crypt0cloud/core/connections"
 	"github.com/crypt0cloud/core/crypto"
+	md "github.com/crypt0cloud/core/model"
 	"github.com/onlyangel/apihandlers"
 	"net/http"
 )
@@ -21,7 +22,7 @@ func transactions_postSingleTransaction(w http.ResponseWriter, r *http.Request) 
 
 	//TODO: verify the the content and the values coincide
 
-	coord_key := db.GetCoordinatorKey(r)
+	coord_key := new(md.Transaction)
 
 	if t.Parent != "" {
 		apihandlers.PanicWithMsg("Single transaction should have a parent = \"\"")
@@ -58,6 +59,8 @@ func transactions_postSingleTransaction(w http.ResponseWriter, r *http.Request) 
 			apihandlers.PanicWithMsg("Node Already setted up")
 		}
 
+	} else {
+		coord_key = db.GetCoordinatorKey(r)
 	}
 
 	if t.SignKind == "__NEWAPP" {
@@ -117,7 +120,7 @@ func transactions_postSingleTransaction(w http.ResponseWriter, r *http.Request) 
 	}
 	myself := db.GetNodeId()
 
-	if t.FromNode.PublicKey != myself.PublicKey {
+	if t.ToNode.PublicKey != myself.PublicKey {
 		apihandlers.PanicWithMsg("Different Origin Node")
 	}
 
