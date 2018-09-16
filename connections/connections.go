@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	md "github.com/crypt0cloud/core/model"
 	gae "github.com/crypt0cloud/model_gae"
+	"log"
 
 	"github.com/onlyangel/apihandlers"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -46,6 +46,9 @@ func CallRemote(r *http.Request, url string) ([]byte, error) {
 }
 
 func PostRemote(r *http.Request, url string, data []byte) []byte {
+	log.Printf("url:")
+	log.Printf(url)
+
 	client := gae.GetClient(r)
 
 	resp, err := client.Post(url, "application/json", bytes.NewBuffer(data))
