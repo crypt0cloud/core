@@ -4,14 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/crypt0cloud/core/crypto"
-	"github.com/crypt0cloud/core/tools"
 	"github.com/onlyangel/apihandlers"
 	"net/http"
 )
 
 func contracts_handler() {
 	http.HandleFunc("/api/v1/create_contract", apihandlers.RecoverApi(contracts_createContract))
-	http.HandleFunc("/api/v1/sign_contract", apihandlers.RecoverApi(contracts_sign))
+	//http.HandleFunc("/api/v1/sign_contract", apihandlers.RecoverApi(contracts_sign))
 
 	http.HandleFunc("/api/v1/create_signingRequest", apihandlers.RecoverApi(contract_createSigningRequest))
 	http.HandleFunc("/api/v1/get_signingRequest", apihandlers.RecoverApi(contract_getSigningRequest))
@@ -58,6 +57,7 @@ func contracts_createContract(w http.ResponseWriter, r *http.Request) {
 	//TODO SEND CALLBACK
 }
 
+/*
 func contracts_sign(w http.ResponseWriter, r *http.Request) {
 	db := model.Open(r, "")
 	t := crypto.Validate_criptoTransaction(r.Body)
@@ -77,3 +77,4 @@ func contracts_sign(w http.ResponseWriter, r *http.Request) {
 
 	//TODO SEND CALLBACK
 }
+*/
