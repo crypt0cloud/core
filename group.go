@@ -13,16 +13,16 @@ import (
 	md "github.com/crypt0cloud/core/model"
 )
 
-func contracts_handler() {
-	http.HandleFunc("/api/v1/create_group", apihandlers.RecoverApi(contracts_createGroup))
+func group_handler() {
+	http.HandleFunc("/api/v1/create_group", apihandlers.RecoverApi(group_createGroup))
 
-	http.HandleFunc("/api/v1/create_signingRequest", apihandlers.RecoverApi(contract_createSigningRequest))
-	http.HandleFunc("/api/v1/get_signingRequest", apihandlers.RecoverApi(contract_getSigningRequest))
-	http.HandleFunc("/api/v1/sign_signingRequest", apihandlers.RecoverApi(contracts_sign_signingRequest))
+	http.HandleFunc("/api/v1/create_signingRequest", apihandlers.RecoverApi(group_createSigningRequest))
+	http.HandleFunc("/api/v1/get_signingRequest", apihandlers.RecoverApi(group_getSigningRequest))
+	http.HandleFunc("/api/v1/sign_signingRequest", apihandlers.RecoverApi(group_sign_signingRequest))
 
 }
 
-func contracts_createGroup(w http.ResponseWriter, r *http.Request) {
+func group_createGroup(w http.ResponseWriter, r *http.Request) {
 	db := model.Open(r, "")
 	t := crypto.Validate_criptoTransaction(r.Body)
 
@@ -62,7 +62,7 @@ func contracts_createGroup(w http.ResponseWriter, r *http.Request) {
 	//TODO SEND CALLBACK
 }
 
-func contracts_sign_signingRequest(w http.ResponseWriter, r *http.Request) {
+func group_sign_signingRequest(w http.ResponseWriter, r *http.Request) {
 	db := model.Open(r, "")
 	t := crypto.Validate_criptoTransaction(r.Body)
 
@@ -81,7 +81,7 @@ func contracts_sign_signingRequest(w http.ResponseWriter, r *http.Request) {
 	//TODO SEND CALLBACK
 }
 
-func contract_getSigningRequest(w http.ResponseWriter, r *http.Request) {
+func group_getSigningRequest(w http.ResponseWriter, r *http.Request) {
 	idstr := r.FormValue("id")
 	if idstr == "" {
 		apihandlers.PanicWithMsg("Problem with parameters")
@@ -101,7 +101,7 @@ func contract_getSigningRequest(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "%s", string(jsonstr))
 }
 
-func contract_createSigningRequest(w http.ResponseWriter, r *http.Request) {
+func group_createSigningRequest(w http.ResponseWriter, r *http.Request) {
 	db := model.Open(r, "")
 
 	bodydecoder := json.NewDecoder(r.Body)
