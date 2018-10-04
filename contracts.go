@@ -4,20 +4,21 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/crypt0cloud/core/crypto"
+	"github.com/crypt0cloud/core/tools"
 	"github.com/onlyangel/apihandlers"
 	"net/http"
 )
 
 func contracts_handler() {
-	http.HandleFunc("/api/v1/create_contract", apihandlers.RecoverApi(contracts_createContract))
-	//http.HandleFunc("/api/v1/sign_contract", apihandlers.RecoverApi(contracts_sign))
+	http.HandleFunc("/api/v1/create_group", apihandlers.RecoverApi(contracts_createGroup))
 
 	http.HandleFunc("/api/v1/create_signingRequest", apihandlers.RecoverApi(contract_createSigningRequest))
 	http.HandleFunc("/api/v1/get_signingRequest", apihandlers.RecoverApi(contract_getSigningRequest))
+	http.HandleFunc("/api/v1/sign_signingRequest", apihandlers.RecoverApi(contracts_sign_signingRequest))
 
 }
 
-func contracts_createContract(w http.ResponseWriter, r *http.Request) {
+func contracts_createGroup(w http.ResponseWriter, r *http.Request) {
 	db := model.Open(r, "")
 	t := crypto.Validate_criptoTransaction(r.Body)
 
@@ -57,24 +58,21 @@ func contracts_createContract(w http.ResponseWriter, r *http.Request) {
 	//TODO SEND CALLBACK
 }
 
-/*
-func contracts_sign(w http.ResponseWriter, r *http.Request) {
+func contracts_sign_signingRequest(w http.ResponseWriter, r *http.Request) {
 	db := model.Open(r, "")
 	t := crypto.Validate_criptoTransaction(r.Body)
 
 	signreq := db.GetSignRequest(r, t.IdVal)
 
-	if t.Parent != signreq.Parent || t.ParentBlock != signreq.ParentBlock || t.SignKind != signreq.SignKind || t.AppID != signreq.AppID || t.Payload != signreq.Payload || t.Callback != signreq.Callback || !tools.IsStringArrayEqual(t.SignerKinds, signreq.SignerKinds) {
-		panic(fmt.Errorf("Values of the signing request are different from the parent transaction"))
+	if t.Parent != signreq.Parent || t.SignKind != signreq.SignKind || t.AppID != signreq.AppID || t.Payload != signreq.Payload || t.Callback != signreq.Callback || !tools.IsStringArrayEqual(t.SignerKinds, signreq.SignerKinds) {
+		apihandlers.PanicWithMsg("Values of the signing request are different from the parent transaction")
 	}
 
 	t = db.InsertTransaction(r, t)
 	jsonstr, err := json.Marshal(t)
-	if err != nil {
-		panic(err)
-	}
+	apihandlers.PanicIfNotNil(err)
+
 	fmt.Fprintf(w, "%s", jsonstr)
 
 	//TODO SEND CALLBACK
 }
-*/
