@@ -95,9 +95,8 @@ func group_getSigningRequest(w http.ResponseWriter, r *http.Request) {
 	t := db.GetSignRequest(r, id)
 
 	jsonstr, err := json.Marshal(t)
-	if err != nil {
-		panic(err)
-	}
+	apihandlers.PanicIfNotNil(err)
+
 	fmt.Fprintf(w, "%s", string(jsonstr))
 }
 
