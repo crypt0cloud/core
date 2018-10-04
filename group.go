@@ -144,7 +144,7 @@ func group_createSigningRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	parent := db.GetParentTransaction(r, t.Parent)
-	if t.AppID != parent.AppID || t.Payload != parent.Payload || t.Callback != parent.Callback || !tools.IsStringArrayEqual(t.SignerKinds, parent.SignerKinds) {
+	if t.AppID != parent.AppID || t.Callback != parent.Callback || !tools.IsStringArrayEqual(t.SignerKinds, parent.SignerKinds) {
 		apihandlers.PanicWithMsg("Values of the signing request are different from the parent transaction")
 	}
 
