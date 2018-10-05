@@ -30,9 +30,7 @@ func transactions_postSingleTransaction(w http.ResponseWriter, r *http.Request) 
 	if t.Creation == 0 {
 		apihandlers.PanicWithMsg("Creation should be a current time")
 	}
-	if t.OriginatorURl != "" {
-		apihandlers.PanicWithMsg("OriginatorURL must be \"\" in Single Transactions")
-	}
+
 	//TODO: verify time
 
 	if t.SignKind == "__REGISTERNODE" {

@@ -82,7 +82,7 @@ type Transaction struct {
 	IdVal int64
 
 	//Control
-	OriginatorURl string
+	//OriginatorURl string
 
 	//Signed
 	InsertMoment int64
@@ -95,9 +95,9 @@ type Transaction struct {
 
 	FromNode, ToNode NodeIdentification
 
-	Payload     string
-	Parent      string
-	ParentBlock int64 //TODO AGREGARIN SINGLE TRANSACTIONS, Y CONTRACT CREATION
+	Payload string
+	Parent  string
+	//ParentBlock int64 //TODO AGREGARIN SINGLE TRANSACTIONS, Y CONTRACT CREATION
 	AppID       string
 	SignerKinds []string
 	SignKind    string
