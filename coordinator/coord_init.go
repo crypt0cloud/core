@@ -13,6 +13,7 @@ import (
 	"github.com/onlyangel/apihandlers"
 	"golang.org/x/crypto/ed25519"
 	"google.golang.org/appengine/log"
+	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"time"
@@ -72,15 +73,18 @@ func coord_registerNewNode(w http.ResponseWriter, r *http.Request) {
 	mk := db.Coord_GetKey()
 	myNodeID := db.GetNodeId()
 
-	bodydecoder := json.NewDecoder(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
 
 	cn := new(struct {
 		Content string
 		Sign    string
 	})
-	err := bodydecoder.Decode(cn)
-	defer r.Body.Close()
+
+	err = json.Unmarshal(body, cn)
 	apihandlers.PanicIfNotNil(err)
+
+	log.Infof(ctx, "%+v", cn)
 
 	sign, err := base64.StdEncoding.DecodeString(cn.Sign)
 	apihandlers.PanicIfNotNil(err)
