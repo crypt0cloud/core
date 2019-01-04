@@ -6,6 +6,7 @@ import (
 	"github.com/crypt0cloud/core/crypto"
 	"github.com/crypt0cloud/core/tools"
 	"github.com/onlyangel/apihandlers"
+	"google.golang.org/appengine/log"
 	"net/http"
 	"strconv"
 	"time"
@@ -26,6 +27,8 @@ func group_createGroup(w http.ResponseWriter, r *http.Request) {
 	db := model.Open(r, "")
 	t := crypto.Validate_criptoTransaction(r.Body)
 
+	ctx := tools.Context(r)
+	log.Infof(ctx, "%+v", t)
 	//TODO: verify the the content and the values coincide
 
 	if t.Parent != "" { //request should be 0
@@ -45,9 +48,10 @@ func group_createGroup(w http.ResponseWriter, r *http.Request) {
 		apihandlers.PanicWithMsg("AppID doesnt exists")
 	}
 
-	if user := db.UserSignExist(r, t.Signer); user == nil {
+	// removing becaus this is signed by an app
+	/*if user := db.UserSignExist(r, t.Signer); user == nil {
 		apihandlers.PanicWithMsg("Sign doesnt exists")
-	}
+	}*/
 
 	myself := db.GetNodeId()
 	if t.FromNode.PublicKey != myself.PublicKey {
@@ -132,11 +136,8 @@ func group_createSigningRequest(w http.ResponseWriter, r *http.Request) {
 	if t.Sign != "" {
 		apihandlers.PanicWithMsg("Sign shoudl be empty string")
 	}
-	if t.InsertMoment != 0 {
-		apihandlers.PanicWithMsg("InsertMoment shoudl be 0")
-	}
 	if t.Parent == "" {
-		apihandlers.PanicWithMsg("Parent shoudl be empty string")
+		apihandlers.PanicWithMsg("Parent shouldnt be empty string")
 	}
 	if !db.AppIdExists(r, t.AppID) {
 		apihandlers.PanicWithMsg("AppID doesnt exists")

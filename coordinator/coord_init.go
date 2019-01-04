@@ -197,6 +197,8 @@ func coord_addApp(w http.ResponseWriter, r *http.Request) {
 	//Validate criptographically transaction body
 	t := crypto.Validate_criptoTransaction(r.Body)
 
+	log.Infof(tools.Context(r), "REceiving transaction order: %+v", t)
+
 	// Validate transaction data
 	if t.SignKind != "NewApp" {
 		apihandlers.PanicWithMsg("No New App transaction")
@@ -251,6 +253,8 @@ func coord_addApp(w http.ResponseWriter, r *http.Request) {
 
 		jsonstr, err := json.Marshal(transaction)
 		apihandlers.PanicIfNotNil(err)
+
+		log.Infof(tools.Context(r), "Adding app: %+v", transaction)
 
 		response := connections.PostRemote(r, "http://"+node.Endpoint+"/api/v1/post_single_transaction", jsonstr)
 

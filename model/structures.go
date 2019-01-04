@@ -90,12 +90,12 @@ type Transaction struct {
 	Signer       string
 
 	Hash     string
-	Content  string
+	Content  string `datastore:",noindex"`
 	Creation int64
 
 	FromNode, ToNode NodeIdentification
 
-	Payload string
+	Payload string `datastore:",noindex"`
 	Parent  string
 	//ParentBlock int64 //TODO AGREGARIN SINGLE TRANSACTIONS, Y CONTRACT CREATION
 	AppID       string
