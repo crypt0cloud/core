@@ -31,6 +31,9 @@ func transactions_postSingleTransaction(w http.ResponseWriter, r *http.Request) 
 		apihandlers.PanicWithMsg("Creation should be a current time")
 	}
 
+	if t.BlockSign == "" {
+		apihandlers.PanicWithMsg("Every transaction must have a BlockSign")
+	}
 	//TODO: verify time
 
 	if t.SignKind == "__REGISTERNODE" {

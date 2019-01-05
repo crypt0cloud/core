@@ -2,6 +2,7 @@ package model
 
 import (
 	"net/http"
+	"time"
 )
 
 type ModelConnector interface {
@@ -54,6 +55,13 @@ type ModelDatabase interface {
 	*/
 	InsertSignRequest(r *http.Request, t *Transaction) *Transaction
 	GetSignRequest(r *http.Request, id int64) *Transaction
+
+	/*
+		Blocks
+	*/
+	InsertBlock(block *Block)
+	CountBlocks() int
+	GetLastBlocks(size int) []Block
 }
 
 /**
@@ -78,8 +86,17 @@ type NodeIdentification struct {
 	Myself     bool
 }
 
+type Block struct {
+	Creation          time.Time
+	TransactionsCount int
+	Hash              string
+	Sign              string
+}
+
 type Transaction struct {
 	IdVal int64
+
+	BlockSign string
 
 	//Control
 	//OriginatorURl string

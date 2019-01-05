@@ -110,6 +110,16 @@ func coord_registerNewNode(w http.ResponseWriter, r *http.Request) {
 	for _, url := range nodesdata.Urls {
 		nodeID := connections.GetRemoteNodeCredentials(r, url)
 
+		//TODO: init the node for blockchain
+
+		blockurl := "http://" + url + "/api/setup/initial_blocks"
+		response, err := connections.CallRemote(r, blockurl)
+		apihandlers.PanicIfNotNil(err)
+		var arr []md.Block
+
+		err = json.Unmarshal(response, &arr)
+		apihandlers.PanicIfNotNil(err)
+
 		sha_256 := sha256.New()
 
 		transaction := new(md.Transaction)
@@ -120,6 +130,7 @@ func coord_registerNewNode(w http.ResponseWriter, r *http.Request) {
 		transaction.Callback = "http://" + mk.URL
 		transaction.Payload = url
 		transaction.Creation = time.Now().UnixNano()
+		transaction.BlockSign = arr[0].Sign
 
 		transaction.ToNode = *nodeID
 		transaction.FromNode = *myNodeID
@@ -141,7 +152,7 @@ func coord_registerNewNode(w http.ResponseWriter, r *http.Request) {
 		apihandlers.PanicIfNotNil(err)
 
 		traurl := "http://" + url + "/api/v1/post_single_transaction"
-		response := connections.PostRemote(r, traurl, jsonstr)
+		response = connections.PostRemote(r, traurl, jsonstr)
 
 		log.Debugf(ctx, "Transaction response from: '%s'", traurl)
 		log.Debugf(ctx, string(response))
@@ -243,6 +254,7 @@ func coord_addApp(w http.ResponseWriter, r *http.Request) {
 		transaction.Parent = ""
 		transaction.Callback = t.Callback
 		transaction.Payload = "__NEWAPP"
+		transaction.BlockSign = t.BlockSign
 
 		transaction.Creation = time.Now().UnixNano()
 
