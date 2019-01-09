@@ -20,6 +20,7 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	http.HandleFunc("/ping", apihandlers.RecoverApi(pong))
 	http.HandleFunc("/_ah/warmup", apihandlers.RecoverApi(warmup))
 

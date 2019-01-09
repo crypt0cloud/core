@@ -1,6 +1,7 @@
 package model
 
 import (
+	"google.golang.org/appengine/datastore"
 	"net/http"
 	"time"
 )
@@ -62,6 +63,10 @@ type ModelDatabase interface {
 	InsertBlock(block *Block)
 	CountBlocks() int
 	GetLastBlocks(size int) []Block
+
+	BlockTransactionsCursor(sign string) StorageCursor
+	NextTransactionSign(cursor StorageCursor) ([]byte, bool)
+	BlockTransactionsCursorClose(mod StorageCursor)
 }
 
 /**
@@ -87,10 +92,12 @@ type NodeIdentification struct {
 }
 
 type Block struct {
-	Creation          time.Time
-	TransactionsCount int
-	Hash              string
-	Sign              string
+	Creation                  time.Time
+	TransactionsCount         int
+	NextBlockTransactionsUsed int
+	Hash                      string
+	Sign                      string
+	BlockTime                 time.Time
 }
 
 type Transaction struct {
@@ -119,4 +126,8 @@ type Transaction struct {
 	SignerKinds []string
 	SignKind    string
 	Callback    string
+}
+
+type StorageCursor struct {
+	GAE *datastore.Iterator
 }
