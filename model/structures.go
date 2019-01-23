@@ -84,10 +84,10 @@ type MasterKey struct {
 Structures for nodes
 */
 type NodeIdentification struct {
-	Creation   int64  `json:"omitempty"`
-	PublicKey  string `json:"omitempty"`
+	Creation   int64  `json:",omitempty"`
+	PublicKey  string `json:",omitempty"`
 	PrivateKey string `json:",omitempty"`
-	Endpoint   string `json:"omitempty"`
+	Endpoint   string `json:",omitempty"`
 	Myself     bool
 }
 
@@ -103,29 +103,29 @@ type Block struct {
 type Transaction struct {
 	IdVal int64
 
-	BlockSign string `json:"omitempty"`
+	BlockSign string `json:",omitempty"`
 
 	//Control
 	//OriginatorURl string
 
 	//Signed
-	InsertMoment int64  `json:"omitempty"`
-	Sign         string `json:"omitempty"`
-	Signer       string `json:"omitempty"`
+	InsertMoment int64  `json:",omitempty"`
+	Sign         string `json:",omitempty"`
+	Signer       string `json:",omitempty"`
 
-	Hash     string `json:"omitempty"`
+	Hash     string `json:",omitempty"`
 	Content  string `datastore:",noindex"`
-	Creation int64  `json:"omitempty"`
+	Creation int64  `json:",omitempty"`
 
-	FromNode, ToNode NodeIdentification `json:"omitempty"`
+	FromNode, ToNode NodeIdentification `json:",omitempty"`
 
 	Payload string `datastore:",noindex"`
-	Parent  string `json:"omitempty"`
+	Parent  string `json:",omitempty"`
 	//ParentBlock int64 //TODO AGREGARIN SINGLE TRANSACTIONS, Y CONTRACT CREATION
-	AppID       string   `json:"omitempty"`
-	SignerKinds []string `json:"omitempty"`
-	SignKind    string   `json:"omitempty"`
-	Callback    string   `json:"omitempty"`
+	AppID       string   `json:",omitempty"`
+	SignerKinds []string `json:",omitempty"`
+	SignKind    string   `json:",omitempty"`
+	Callback    string   `json:",omitempty"`
 }
 
 type StorageCursor struct {
