@@ -1,5 +1,29 @@
 package query
 
+import (
+	md "github.com/crypt0cloud/core/model"
+	"github.com/onlyangel/apihandlers"
+	"log"
+	"net/http"
+)
+var model md.ModelConnector
+
 func init() {
-	//http.HandleFunc("/api/v1/q/user/exists",)
+	var err error
+	model, err = md.Open("datastore")
+	if err != nil {
+		log.Fatal(err)
+	}
+	http.HandleFunc("/query/v1/blocks",apihandlers.RecoverApi(blocks))
 }
+
+func blocks(w http.ResponseWriter, r *http.Request){
+	db := model.Open(r, "")
+
+	size, offset := _handleFilters(r)
+
+	blocks := db.GetBlocks(size,offset)
+
+	apihandlers.WriteAsJsonList(w,blocks)
+}
+

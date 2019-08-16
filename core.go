@@ -6,11 +6,13 @@ import (
 	"github.com/crypt0cloud/core/crypto"
 	"github.com/crypt0cloud/core/crypto/ed_25519"
 	md "github.com/crypt0cloud/core/model"
+	_ "github.com/crypt0cloud/core/query"
 	"github.com/onlyangel/apihandlers"
 	"log"
 	"net/http"
 	"time"
 )
+
 
 var model md.ModelConnector
 
@@ -32,6 +34,8 @@ func init() {
 	group_handler()
 
 	block_handlers()
+
+	query_handlers()
 }
 
 func warmup(w http.ResponseWriter, r *http.Request) {

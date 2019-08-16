@@ -67,6 +67,19 @@ type ModelDatabase interface {
 	BlockTransactionsCursor(sign string) StorageCursor
 	NextTransactionSign(cursor StorageCursor) ([]byte, bool)
 	BlockTransactionsCursorClose(mod StorageCursor)
+
+	/*
+		Query
+	 */
+	GetBlocks(size, offset int) []Block
+	GetBlockTransactions(blockid string, size, offset int, metadata bool) []Transaction
+	GetGroupTransactions(blockid string, size, offset int, metadata bool) []Transaction
+
+	/*
+		Query Explorer
+	 */
+
+
 }
 
 /**
@@ -114,12 +127,12 @@ type Transaction struct {
 	Signer       string `json:",omitempty"`
 
 	Hash     string `json:",omitempty"`
-	Content  string `datastore:",noindex"`
+	Content  string `datastore:",noindex" json:",omitempty"`
 	Creation int64  `json:",omitempty"`
 
 	FromNode, ToNode NodeIdentification `json:",omitempty"`
 
-	Payload string `datastore:",noindex"`
+	Payload string `datastore:",noindex" json:",omitempty"`
 	Parent  string `json:",omitempty"`
 	//ParentBlock int64 //TODO AGREGARIN SINGLE TRANSACTIONS, Y CONTRACT CREATION
 	AppID       string   `json:",omitempty"`
