@@ -117,7 +117,8 @@ type Transaction struct {
 	Content  string `datastore:",noindex"`
 	Creation int64  `json:",omitempty"`
 
-	FromNode, ToNode NodeIdentification `json:",omitempty"`
+	FromNode NodeIdentification `json:",omitempty"`
+	ToNode NodeIdentification `json:",omitempty"`
 
 	Payload string `datastore:",noindex"`
 	Parent  string `json:",omitempty"`
