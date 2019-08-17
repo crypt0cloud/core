@@ -6,7 +6,9 @@ import (
 	"github.com/crypt0cloud/core/connections"
 	"github.com/crypt0cloud/core/crypto"
 	md "github.com/crypt0cloud/core/model"
+	"github.com/crypt0cloud/core/tools"
 	"github.com/onlyangel/apihandlers"
+	"google.golang.org/appengine/log"
 	"net/http"
 )
 
@@ -19,6 +21,9 @@ func transactions_handle() {
 func transactions_postSingleTransaction(w http.ResponseWriter, r *http.Request) {
 	db := model.Open(r, "")
 	t := crypto.Validate_criptoTransaction(r.Body)
+
+	log.Infof(tools.Context(r), "SINGLE TRANSACTION")
+	log.Infof(tools.Context(r), "%+v",t)
 
 	//TODO: verify the the content and the values coincide
 
@@ -126,6 +131,8 @@ func transactions_postSingleTransaction(w http.ResponseWriter, r *http.Request) 
 	}
 
 	if t.SignKind != "__REGISTERNODE" {
+		log.Infof(tools.Context(r)," COORD KEY ")
+		log.Infof(tools.Context(r),"%+v",coord_key)
 		sino := connections.ValidateTransactionWithPeers(r, t, coord_key.FromNode)
 		if !sino {
 			apihandlers.PanicWithMsg("Peer virification invalid")

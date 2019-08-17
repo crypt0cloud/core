@@ -247,6 +247,14 @@ func coord_addApp(w http.ResponseWriter, r *http.Request) {
 	// Create the app in all the nodes
 	for _, node := range arr {
 
+		log.Infof(tools.Context(r),"%+v",node)
+
+		resp, err := connections.CallRemote(r,fmt.Sprintf("http://%s/api/v1/block/get_lasts",node.Endpoint))
+		apihandlers.PanicIfNotNil(err)
+		var arr []md.Block
+		err = json.Unmarshal(resp, &arr)
+		apihandlers.PanicIfNotNil(err)
+
 		transaction := new(md.Transaction)
 		transaction.SignerKinds = []string{"__NEWAPP"}
 		transaction.SignKind = "__NEWAPP"
@@ -254,7 +262,7 @@ func coord_addApp(w http.ResponseWriter, r *http.Request) {
 		transaction.Parent = ""
 		transaction.Callback = t.Callback
 		transaction.Payload = "__NEWAPP"
-		transaction.BlockSign = t.BlockSign
+		transaction.BlockSign = arr[0].Sign
 
 		transaction.Creation = time.Now().UnixNano()
 
