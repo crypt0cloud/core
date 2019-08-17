@@ -70,16 +70,16 @@ type ModelDatabase interface {
 
 	/*
 		Query
-	 */
-	GetBlocks(size, offset int) []Block
+	*/
+	GetBlocksByOffset(size, offset int) []Block
 	GetBlockTransactions(blockid string, size, offset int, metadata bool) []Transaction
 	GetGroupTransactions(blockid string, size, offset int, metadata bool) []Transaction
 
 	/*
 		Query Explorer
-	 */
-
-
+	*/
+	GetApplicationTransactions(appid, from, to string, metadata bool) []Transaction
+	GetApplicationTransaction(appid, sign string, metadata bool) *Transaction
 }
 
 /**
@@ -131,7 +131,7 @@ type Transaction struct {
 	Creation int64  `json:",omitempty"`
 
 	FromNode NodeIdentification `json:",omitempty"`
-	ToNode NodeIdentification `json:",omitempty"`
+	ToNode   NodeIdentification `json:",omitempty"`
 
 	Payload string `datastore:",noindex" json:",omitempty"`
 	Parent  string `json:",omitempty"`

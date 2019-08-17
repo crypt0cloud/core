@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 )
+
 var model md.ModelConnector
 
 func init() {
@@ -14,16 +15,15 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	http.HandleFunc("/query/v1/blocks",apihandlers.RecoverApi(blocks))
+	http.HandleFunc("/query/v1/blocks", apihandlers.RecoverApi(blocks))
 }
 
-func blocks(w http.ResponseWriter, r *http.Request){
+func blocks(w http.ResponseWriter, r *http.Request) {
 	db := model.Open(r, "")
 
 	size, offset := _handleFilters(r)
 
-	blocks := db.GetBlocks(size,offset)
+	blocks := db.GetBlocksByOffset(size, offset)
 
-	apihandlers.WriteAsJsonList(w,blocks)
+	apihandlers.WriteAsJsonList(w, blocks)
 }
-

@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func query_handlers(){
+func query_handlers() {
 	//pq := new(PublicQuery)
 	//http.HandleFunc("/query/v1/blocks",apihandlers.Recover(pq.ListBlocks))
 	//http.HandleFunc("/query/v1/block_transactions",apihandlers.Recover(pq.ListBlockTransacions))
@@ -15,7 +15,7 @@ func query_handlers(){
 
 }
 
-func _handleFilters(r *http.Request)(int, int){
+func _handleFilters(r *http.Request) (int, int) {
 	s := r.FormValue("result_size")
 	o := r.FormValue("result_offset")
 
@@ -32,21 +32,20 @@ func _handleFilters(r *http.Request)(int, int){
 	return size, offset
 }
 
-type PublicQuery struct{
-
+type PublicQuery struct {
 }
 
-func (pq PublicQuery) ListBlocks(w http.ResponseWriter, r *http.Request){
-	db := model.Open( r,"")
+func (pq PublicQuery) ListBlocks(w http.ResponseWriter, r *http.Request) {
+	db := model.Open(r, "")
 
 	size, offset := _handleFilters(r)
 
-	blocks := db.GetBlocks(size,offset)
+	blocks := db.GetBlocksByOffset(size, offset)
 	json.NewEncoder(w).Encode(blocks)
 }
 
-func (pq PublicQuery) ListBlockTransacions(w http.ResponseWriter, r *http.Request){
-	db := model.Open( r,"")
+func (pq PublicQuery) ListBlockTransacions(w http.ResponseWriter, r *http.Request) {
+	db := model.Open(r, "")
 
 	blockid := r.FormValue("block")
 	if blockid == "" {
@@ -61,12 +60,12 @@ func (pq PublicQuery) ListBlockTransacions(w http.ResponseWriter, r *http.Reques
 
 	size, offset := _handleFilters(r)
 
-	blocks := db.GetBlockTransactions(blockid,size,offset,getall)
+	blocks := db.GetBlockTransactions(blockid, size, offset, getall)
 	json.NewEncoder(w).Encode(blocks)
 }
 
-func (pq PublicQuery) ListGroupTransacions(w http.ResponseWriter, r *http.Request){
-	db := model.Open( r,"")
+func (pq PublicQuery) ListGroupTransacions(w http.ResponseWriter, r *http.Request) {
+	db := model.Open(r, "")
 
 	group := r.FormValue("group")
 	if group == "" {
@@ -81,6 +80,6 @@ func (pq PublicQuery) ListGroupTransacions(w http.ResponseWriter, r *http.Reques
 
 	size, offset := _handleFilters(r)
 
-	blocks := db.GetGroupTransactions(group,size,offset,getall)
+	blocks := db.GetGroupTransactions(group, size, offset, getall)
 	json.NewEncoder(w).Encode(blocks)
 }

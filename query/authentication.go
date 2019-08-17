@@ -5,11 +5,9 @@ import (
 	"net/http"
 )
 
-
-
 func _get_authentication(r *http.Request) *authentication {
-	apppublickey := r.Header.Get("Crypt0.Cloud-AppId")
-	if apppublickey == ""{
+	apppublickey := r.Header.Get("C0C_Auth")
+	if apppublickey == "" {
 		apihandlers.PanicWithMsg("Invalid Credentials")
 	}
 
@@ -17,10 +15,10 @@ func _get_authentication(r *http.Request) *authentication {
 }
 
 type authentication struct {
-	AppPublicKey	string
+	AppPublicKey string
 }
 
-func NewAuthentiation(apk string) ( auth *authentication) {
+func NewAuthentiation(apk string) (auth *authentication) {
 	auth.AppPublicKey = apk
 	return
 
