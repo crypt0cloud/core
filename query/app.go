@@ -2,6 +2,7 @@ package query
 
 import (
 	"fmt"
+	md "github.com/crypt0cloud/core/model"
 	"github.com/onlyangel/apihandlers"
 	"net/http"
 )
@@ -9,6 +10,47 @@ import (
 func init() {
 	http.HandleFunc("/query/v1/app/transactions", apihandlers.RecoverApi(app_transactions))
 	http.HandleFunc("/query/v1/app/transaction", apihandlers.RecoverApi(app_transaction))
+
+}
+
+func app_groupTransactions(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	publickey := r.FormValue("key")
+	sign := r.FormValue("sign")
+	clear := r.FormValue("clear")
+
+	if publickey == "" || sign == "" || clear == "" {
+		panic(fmt.Errorf("In Parameters"))
+	}
+
+	groupsign := r.FormValue("group")
+
+	meta := r.FormValue("metadata")
+	metadata := false
+	if meta == "true" {
+		metadata = true
+	}
+
+	if groupsign == "" {
+		panic(fmt.Errorf("In parameters"))
+	}
+
+	db := model.Open(r, "")
+	groupTR := db.GetApplicationTransaction(publickey, groupsign, metadata)
+
+	if groupTR == nil {
+		panic(fmt.Errorf("Non existent group"))
+	}
+
+	groupTRs := db.GetApplicationGroupTransactions(publickey, groupsign, metadata)
+
+	var arr []md.Transaction
+
+	arr = append(arr, *groupTR)
+	arr = append(arr, groupTRs...)
+
+	apihandlers.WriteAsJsonList(w, arr)
 
 }
 

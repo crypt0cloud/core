@@ -80,6 +80,7 @@ type ModelDatabase interface {
 	*/
 	GetApplicationTransactions(appid, from, to string, metadata bool) []Transaction
 	GetApplicationTransaction(appid, sign string, metadata bool) *Transaction
+	GetApplicationGroupTransactions(appid, groupsign string, metadata bool) []Transaction
 }
 
 /**
