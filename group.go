@@ -12,6 +12,8 @@ import (
 	"time"
 
 	md "github.com/crypt0cloud/core/model"
+
+	"github.com/skip2/go-qrcode"
 )
 
 func group_handler() {
@@ -91,6 +93,8 @@ func group_getSigningRequest(w http.ResponseWriter, r *http.Request) {
 		apihandlers.PanicWithMsg("Problem with parameters")
 	}
 
+	qr := r.FormValue("qr")
+
 	db := model.Open(r, "")
 
 	id, err := strconv.ParseInt(idstr, 10, 64)
@@ -100,6 +104,14 @@ func group_getSigningRequest(w http.ResponseWriter, r *http.Request) {
 
 	jsonstr, err := json.Marshal(t)
 	apihandlers.PanicIfNotNil(err)
+
+	if qr == "true" {
+		png, err := qrcode.Encode(string(jsonstr), qrcode.Medium, 256)
+		apihandlers.PanicIfNotNil(err)
+		w.Header().Add("Content-Type", "image/png")
+		w.Write(png)
+		return
+	}
 
 	fmt.Fprintf(w, "%s", string(jsonstr))
 }
