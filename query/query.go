@@ -1,10 +1,10 @@
 package query
 
 import (
-	md "github.com/crypt0cloud/core/model"
 	"github.com/onlyangel/apihandlers"
 	"log"
 	"net/http"
+	md "source.cloud.google.com/crypt0cloud-app/crypt0cloud/model_go"
 )
 
 var model md.ModelConnector

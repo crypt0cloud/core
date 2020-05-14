@@ -2,17 +2,16 @@ package core
 
 import (
 	"fmt"
-	_ "github.com/crypt0cloud/core/coordinator"
-	"github.com/crypt0cloud/core/crypto"
-	"github.com/crypt0cloud/core/crypto/ed_25519"
-	md "github.com/crypt0cloud/core/model"
-	_ "github.com/crypt0cloud/core/query"
 	"github.com/onlyangel/apihandlers"
 	"log"
 	"net/http"
+	_ "source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/coordinator"
+	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/crypto"
+	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/crypto/ed_25519"
+	_ "source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/query"
+	md "source.cloud.google.com/crypt0cloud-app/crypt0cloud/model_go"
 	"time"
 )
-
 
 var model md.ModelConnector
 
@@ -65,6 +64,11 @@ func pair_verification(w http.ResponseWriter, r *http.Request) {
 	if t == nil {
 		fmt.Fprintf(w, "false")
 	} else {
+		db := model.Open(r, "")
+
 		fmt.Fprintf(w, "true")
+
+		t.External = true
+		t = db.InsertPairVerificationTransaction(r, t)
 	}
 }

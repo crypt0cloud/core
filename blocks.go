@@ -5,15 +5,16 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/crypt0cloud/core/crypto"
-	md "github.com/crypt0cloud/core/model"
-	"github.com/crypt0cloud/core/tools"
-	"github.com/onlyangel/apihandlers"
+	api "github.com/onlyangel/apihandlers"
 	"golang.org/x/crypto/ed25519"
 	"google.golang.org/appengine/log"
-	"math/rand"
+	"io/ioutil"
 	"net/http"
 	"os"
+	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/connections"
+	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/crypto"
+	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/tools"
+	md "source.cloud.google.com/crypt0cloud-app/crypt0cloud/model_go"
 	"time"
 )
 
@@ -23,8 +24,9 @@ func block_handlers() {
 
 	http.HandleFunc("/api/setup/initial_blocks", block_insert_initial_blocks)
 	http.HandleFunc("/api/v1/block/get_lasts", block_get_last_blocks)
-	http.HandleFunc(BLOCK_CREATION_URL_HANDLER, block_calculate_block)
-
+	//http.HandleFunc(BLOCK_CREATION_URL_HANDLER, block_calculate_block)
+	http.HandleFunc("/api/internal/calculate_block", block_calculate_block)
+	http.HandleFunc("/api/internal/signed_block_insert", block_signed_block_insert)
 }
 
 var (
@@ -32,22 +34,62 @@ var (
 	BLOCK_DURATION             time.Duration
 )
 
+func block_signed_block_insert(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
+
+	block := &md.Block{}
+
+	err = json.Unmarshal(body, block)
+	api.PanicIfNotNil(err)
+
+	db := model.Open(r, "")
+
+	brfi := db.GetBlockRequestForInstanceFromHash(block.Hash)
+	tr := db.GetCoordinatorKey(r)
+	masterkye := crypto.Base64_decode(tr.AppID)
+	sign := crypto.Base64_decode(block.Sign)
+	hash := crypto.Base64_decode(brfi.BlockSignProposal)
+
+	valid := ed25519.Verify(masterkye, hash, sign)
+
+	if !valid {
+		api.PanicWithMsg("NOT VALID")
+	}
+
+	db.InsertBlock(block)
+
+	tra := block_create_first_block_transaction(db, block)
+	db.InsertTransaction(r, tra)
+
+	fmt.Fprintf(w, "OK")
+}
+
 func block_calculate_block(w http.ResponseWriter, r *http.Request) {
-	//todo: security
 	db := model.Open(r, "")
 	arr := db.GetLastBlocks(2)
 
 	if arr[0].BlockTime.UnixNano() > time.Now().UnixNano() {
-		fmt.Fprintf(w, "Try again latter, Its not the moment for a block calculation")
+		api.PanicWithMsg("Try again latter, Its not the moment for a block calculation")
 		return
 	}
-	ran := rand.New(rand.NewSource(time.Now().UnixNano()))
 
-	//calculation of entire block
-	//todo: fixed to to GAE until new migrations
+	coordinatorkey := db.GetCoordinatorKey(r)
+
+	var brt *md.BlockRequestTransport
+	if brt_, valid := crypto.Validate_blockRequestTransport(r.Body, coordinatorkey); !valid {
+		api.PanicWithMsg("Not authoriced")
+	} else {
+		brt = brt_
+	}
+
+	db.InsertBlockRequest(brt.Request)
+	db.InsertBlockRequestForInstance(brt.ForInstance)
 
 	log.Infof(tools.Context(r), "Blocks: %+v", arr)
 
+	// BEGIN calculation of block hash
+	//TODO: migrate block hach calculation to a background service
 	cursor := db.BlockTransactionsCursor(arr[1].Sign)
 	h := sha256.New()
 	blocksize := 0
@@ -60,38 +102,45 @@ func block_calculate_block(w http.ResponseWriter, r *http.Request) {
 	}
 	db.BlockTransactionsCursorClose(cursor)
 
-	//todo: block transactions size
-
-	maxselected := ran.Intn(9) + 1
 	position := 0
 
 	cursor = db.BlockTransactionsCursor(arr[0].Sign)
 	sign, finished = db.NextTransactionSign(cursor)
-	for !finished && position < maxselected {
+	for !finished && position < brt.Request.SeedTrCount {
 		sha_acum = h.Sum(sign)
 		sign, finished = db.NextTransactionSign(cursor)
 		position++
 	}
 	db.BlockTransactionsCursorClose(cursor)
+	// END calculation of block hash
+	myself := db.GetNodeId()
+	myself_private := crypto.Base64_decode(myself.PrivateKey)
 
-	block := block_create_block(db, sha_acum, blocksize, position)
-	block.BlockTime = block_calculteblocktime(arr[0])
-	db.InsertBlock(block)
+	signed := ed25519.Sign(myself_private, sha_acum)
+	brt.ForInstance.BlockSignProposal = crypto.Base64_encode(sha_acum)
+	brt.ForInstance.BlockSignProposalSign = crypto.Base64_encode(signed)
+	brt.ForInstance.BlockSignProposalCount = blocksize
 
-	tr := block_create_first_block_transaction(db, block)
-	db.InsertTransaction(nil, tr)
+	jsonstr, err := json.Marshal(brt.ForInstance)
+	api.PanicIfNotNil(err)
 
-	jsonstr, err := json.Marshal(block)
-	apihandlers.PanicIfNotNil(err)
+	db.UpdateBlockRequestForInstance(brt.ForInstance)
 
-	fmt.Fprintf(w, "%s", string(jsonstr))
+	url := fmt.Sprintf("%s/api/v1/coord/nodeBlockSigning", coordinatorkey.Callback)
+	log.Infof(tools.Context(r), "\n\n\n\nENVIANDO A: %s\n%s\n", url, string(jsonstr))
+	connections.PostRemote(r, url, jsonstr)
+
+	return
 }
 
 func block_get_last_blocks(w http.ResponseWriter, r *http.Request) {
 	db := model.Open(r, "")
 	arr := db.GetLastBlocks(2)
 	jsonstr, err := json.Marshal(arr)
-	apihandlers.PanicIfNotNil(err)
+	if err != nil {
+		// lsdkflksdjfdj
+	}
+	api.PanicIfNotNil(err)
 
 	fmt.Fprintf(w, "%s", string(jsonstr))
 }
@@ -100,40 +149,23 @@ func block_insert_initial_blocks(w http.ResponseWriter, r *http.Request) {
 	db := model.Open(r, "")
 
 	if count := db.CountBlocks(); count > 0 {
-		apihandlers.PanicWithMsg("Already initted blocks")
+		api.PanicWithMsg("Already initted blocks")
 	}
 
-	s1 := rand.NewSource(time.Now().UnixNano())
-	r1 := rand.New(s1)
-	token := make([]byte, 128)
-	r1.Read(token)
-	sha_256 := sha256.New()
-	sha_256.Write([]byte(token))
-	tokensha := sha_256.Sum(nil)
+	tra := new(md.GenesisBlocksTransport)
 
-	block1 := block_create_block(db, tokensha, 0, 0)
-	block1.BlockTime = block1.Creation
-	db.InsertBlock(block1)
+	err := json.NewDecoder(r.Body).Decode(tra)
+	api.PanicIfNotNil(err)
 
-	tr1 := block_create_first_block_transaction(db, block1)
-	db.InsertTransaction(nil, tr1)
+	db.InsertBlock(tra.Block1)
+	db.InsertTransaction(r, tra.Transaction11)
 
-	token = make([]byte, 128)
-	r1.Read(token)
-	sha_256 = sha256.New()
-	sha_256.Write([]byte(token))
-	tokensha = sha_256.Sum(nil)
+	db.InsertBlock(tra.Block2)
+	db.InsertTransaction(r, tra.Transaction21)
 
-	block2 := block_create_block(db, tokensha, 0, 0)
-	block2.BlockTime = block_calculteblocktime(*block1)
-	db.InsertBlock(block2)
-
-	tr2 := block_create_first_block_transaction(db, block2)
-	db.InsertTransaction(nil, tr2)
-
-	arr := []md.Block{*block2, *block1}
+	arr := []md.Block{*tra.Block2, *tra.Block1}
 	jsonstr, err := json.Marshal(arr)
-	apihandlers.PanicIfNotNil(err)
+	api.PanicIfNotNil(err)
 
 	fmt.Fprintf(w, "%s", string(jsonstr))
 }
@@ -173,7 +205,7 @@ func block_create_first_block_transaction(db md.ModelDatabase, block *md.Block) 
 	tr.BlockSign = block.Sign
 
 	jsonstr, err := json.Marshal(tr)
-	apihandlers.PanicIfNotNil(err)
+	api.PanicIfNotNil(err)
 
 	tr.Content = base64.StdEncoding.EncodeToString(jsonstr)
 

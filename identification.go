@@ -3,7 +3,7 @@ package core
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/crypt0cloud/core/tools"
+	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/tools"
 	"github.com/onlyangel/apihandlers"
 	"google.golang.org/appengine/log"
 	"net/http"

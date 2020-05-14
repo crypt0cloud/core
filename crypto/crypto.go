@@ -5,10 +5,11 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
-	"github.com/crypt0cloud/core/model"
+	"fmt"
 	"github.com/onlyangel/apihandlers"
 	"golang.org/x/crypto/ed25519"
 	"io"
+	model "source.cloud.google.com/crypt0cloud-app/crypt0cloud/model_go"
 )
 
 func Base64_encode(toEncode []byte) string {
@@ -54,8 +55,36 @@ func Validate_criptoTransaction(readbody io.ReadCloser) *model.Transaction {
 	}
 
 	if !ed25519.Verify(signer, hash, sign) {
-		apihandlers.PanicWithMsg("Sign dont coincide")
+		apihandlers.PanicWithMsg(fmt.Sprintf("Sign dont coincide: %+v", t))
 	}
 
 	return t
+}
+
+func Validate_blockRequestTransport(readbody io.ReadCloser, coordinatorTR *model.Transaction) (*model.BlockRequestTransport, bool) {
+	bodydecoder := json.NewDecoder(readbody)
+
+	t := new(model.BlockRequestTransport)
+	err := bodydecoder.Decode(t)
+	defer readbody.Close()
+
+	if err != nil {
+		if err.Error() == "EOF" {
+			panic("Empty body")
+		} else {
+			panic(err)
+		}
+	}
+
+	sha_256 := sha256.New()
+	payload := Base64_decode(t.ForInstance.Content)
+	sha_256.Write(payload)
+	payload_sha := sha_256.Sum(nil)
+
+	sign := Base64_decode(t.ForInstance.Sign)
+
+	pkey := Base64_decode(coordinatorTR.AppID)
+
+	return t, ed25519.Verify(pkey, payload_sha, sign)
+
 }

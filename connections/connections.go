@@ -3,9 +3,9 @@ package connections
 import (
 	"bytes"
 	"encoding/json"
-	md "github.com/crypt0cloud/core/model"
-	gae "github.com/crypt0cloud/model_gae"
 	"log"
+	gae "source.cloud.google.com/crypt0cloud-app/crypt0cloud/model_gae"
+	md "source.cloud.google.com/crypt0cloud-app/crypt0cloud/model_go"
 
 	"github.com/onlyangel/apihandlers"
 	"io/ioutil"

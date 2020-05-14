@@ -3,10 +3,10 @@ package signing
 import (
 	"crypto/sha256"
 	"encoding/json"
-	"github.com/crypt0cloud/core/crypto"
-	"github.com/crypt0cloud/core/model"
 	"github.com/onlyangel/apihandlers"
 	"golang.org/x/crypto/ed25519"
+	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/crypto"
+	model "source.cloud.google.com/crypt0cloud-app/crypt0cloud/model_go"
 )
 
 func SignTransaction(transaction *model.Transaction, masterkey model.MasterKey) {
@@ -30,4 +30,25 @@ func SignTransaction(transaction *model.Transaction, masterkey model.MasterKey) 
 
 	// store masterkey public key
 	transaction.Signer = crypto.Base64_encode(masterkey.CoordinatorPublic)
+}
+
+func SignBlockRequestTransport(blrq *model.BlockRequestTransport, masterkey *model.MasterKey) {
+	sha_256 := sha256.New()
+
+	// calculate payload
+	payload, err := json.Marshal(blrq)
+	apihandlers.PanicIfNotNil(err)
+
+	// encode (base64 encondign) payload
+	blrq.ForInstance.Content = crypto.Base64_encode(payload)
+
+	//calculate hash of payload
+	sha_256.Write(payload)
+	payload_sha := sha_256.Sum(nil)
+
+	// sign payload with masterkey
+	sign := ed25519.Sign(masterkey.CoordinatorPrivate, payload_sha)
+	blrq.ForInstance.Sign = crypto.Base64_encode(sign) // store signed payload
+
+	// store masterkey public key
 }

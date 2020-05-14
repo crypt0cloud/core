@@ -3,13 +3,13 @@ package core
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/crypt0cloud/core/connections"
-	"github.com/crypt0cloud/core/crypto"
-	md "github.com/crypt0cloud/core/model"
-	"github.com/crypt0cloud/core/tools"
 	"github.com/onlyangel/apihandlers"
 	"google.golang.org/appengine/log"
 	"net/http"
+	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/connections"
+	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/crypto"
+	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/tools"
+	md "source.cloud.google.com/crypt0cloud-app/crypt0cloud/model_go"
 )
 
 func transactions_handle() {
@@ -23,7 +23,7 @@ func transactions_postSingleTransaction(w http.ResponseWriter, r *http.Request) 
 	t := crypto.Validate_criptoTransaction(r.Body)
 
 	log.Infof(tools.Context(r), "SINGLE TRANSACTION")
-	log.Infof(tools.Context(r), "%+v",t)
+	log.Infof(tools.Context(r), "%+v", t)
 
 	//TODO: verify the the content and the values coincide
 
@@ -131,8 +131,9 @@ func transactions_postSingleTransaction(w http.ResponseWriter, r *http.Request) 
 	}
 
 	if t.SignKind != "__REGISTERNODE" {
-		log.Infof(tools.Context(r)," COORD KEY ")
-		log.Infof(tools.Context(r),"%+v",coord_key)
+		t.External = false
+		log.Infof(tools.Context(r), " COORD KEY ")
+		log.Infof(tools.Context(r), "%+v", coord_key)
 		sino := connections.ValidateTransactionWithPeers(r, t, coord_key.FromNode)
 		if !sino {
 			apihandlers.PanicWithMsg("Peer virification invalid")

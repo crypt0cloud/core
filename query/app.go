@@ -2,14 +2,15 @@ package query
 
 import (
 	"fmt"
-	md "github.com/crypt0cloud/core/model"
 	"github.com/onlyangel/apihandlers"
 	"net/http"
+	md "source.cloud.google.com/crypt0cloud-app/crypt0cloud/model_go"
 )
 
 func init() {
 	http.HandleFunc("/query/v1/app/transactions", apihandlers.RecoverApi(app_transactions))
 	http.HandleFunc("/query/v1/app/transaction", apihandlers.RecoverApi(app_transaction))
+	http.HandleFunc("/query/v1/app/group", apihandlers.RecoverApi(app_groupTransactions))
 
 }
 

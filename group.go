@@ -3,15 +3,15 @@ package core
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/crypt0cloud/core/crypto"
-	"github.com/crypt0cloud/core/tools"
 	"github.com/onlyangel/apihandlers"
 	"google.golang.org/appengine/log"
 	"net/http"
+	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/crypto"
+	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/tools"
 	"strconv"
 	"time"
 
-	md "github.com/crypt0cloud/core/model"
+	md "source.cloud.google.com/crypt0cloud-app/crypt0cloud/model_go"
 
 	"github.com/skip2/go-qrcode"
 )
