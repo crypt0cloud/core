@@ -10,10 +10,10 @@ import (
 	"github.com/onlyangel/apihandlers"
 	"google.golang.org/appengine/log"
 
-	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/crypto"
-	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/tools"
+	"github.com/crypt0cloud/core/crypto"
+	"github.com/crypt0cloud/core/tools"
 
-	md "source.cloud.google.com/crypt0cloud-app/crypt0cloud/model_go"
+	md "github.com/crypt0cloud/model_go"
 
 	"github.com/skip2/go-qrcode"
 )

@@ -8,10 +8,10 @@ import (
 	"github.com/onlyangel/apihandlers"
 	"google.golang.org/appengine/log"
 
-	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/connections"
-	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/crypto"
-	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/tools"
-	md "source.cloud.google.com/crypt0cloud-app/crypt0cloud/model_go"
+	"github.com/crypt0cloud/core/connections"
+	"github.com/crypt0cloud/core/crypto"
+	"github.com/crypt0cloud/core/tools"
+	md "github.com/crypt0cloud/model_go"
 )
 
 func transactions_handle() {

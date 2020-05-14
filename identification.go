@@ -8,7 +8,7 @@ import (
 	"github.com/onlyangel/apihandlers"
 	"google.golang.org/appengine/log"
 
-	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/tools"
+	"github.com/crypt0cloud/core/tools"
 )
 
 func identification_handlers() {

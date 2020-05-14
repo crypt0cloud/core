@@ -9,8 +9,8 @@ import (
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/log"
 
-	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/crypto"
-	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/tools"
+	"github.com/crypt0cloud/core/crypto"
+	"github.com/crypt0cloud/core/tools"
 )
 
 func setup_hanlers() {
@@ -29,11 +29,11 @@ func setup_configureEndPointName(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func setup_setInitialNodeRegistration(w http.ResponseWriter, r *http.Request){
+func setup_setInitialNodeRegistration(w http.ResponseWriter, r *http.Request) {
 	db := model.Open(r, "")
 	t := crypto.Validate_criptoTransaction(r.Body)
 
-	log.Infof(appengine.NewContext(r), "NODE REGISTRATION: %+v",t)
+	log.Infof(appengine.NewContext(r), "NODE REGISTRATION: %+v", t)
 
 	if t.SignKind != "__REGISTERNODE" {
 		apihandlers.PanicWithMsg("Not Valid")

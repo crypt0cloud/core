@@ -16,12 +16,12 @@ import (
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/log"
 
-	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/connections"
-	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/crypto"
-	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/crypto/signing"
-	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/tools"
+	"github.com/crypt0cloud/core/connections"
+	"github.com/crypt0cloud/core/crypto"
+	"github.com/crypt0cloud/core/crypto/signing"
+	"github.com/crypt0cloud/core/tools"
 
-	md "source.cloud.google.com/crypt0cloud-app/crypt0cloud/model_go"
+	md "github.com/crypt0cloud/model_go"
 )
 
 var model md.ModelConnector

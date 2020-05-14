@@ -6,7 +6,7 @@ import (
 
 	"github.com/onlyangel/apihandlers"
 
-	md "source.cloud.google.com/crypt0cloud-app/crypt0cloud/model_go"
+	md "github.com/crypt0cloud/model_go"
 )
 
 var model md.ModelConnector
