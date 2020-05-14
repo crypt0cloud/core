@@ -6,18 +6,20 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"math/rand"
+	"net/http"
+	"time"
+
 	"github.com/onlyangel/apihandlers"
 	"golang.org/x/crypto/ed25519"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/log"
-	"io/ioutil"
-	"math/rand"
-	"net/http"
+
 	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/connections"
 	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/crypto"
 	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/crypto/signing"
 	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/tools"
-	"time"
 
 	md "source.cloud.google.com/crypt0cloud-app/crypt0cloud/model_go"
 )

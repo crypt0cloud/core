@@ -1,8 +1,9 @@
 package query
 
 import (
-	"github.com/onlyangel/apihandlers"
 	"net/http"
+
+	"github.com/onlyangel/apihandlers"
 )
 
 func _get_authentication(r *http.Request) *authentication {

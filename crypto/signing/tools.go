@@ -3,8 +3,10 @@ package signing
 import (
 	"crypto/sha256"
 	"encoding/json"
+
 	"github.com/onlyangel/apihandlers"
 	"golang.org/x/crypto/ed25519"
+
 	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/crypto"
 	model "source.cloud.google.com/crypt0cloud-app/crypt0cloud/model_go"
 )

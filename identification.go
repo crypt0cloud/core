@@ -3,10 +3,12 @@ package core
 import (
 	"encoding/json"
 	"fmt"
-	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/tools"
+	"net/http"
+
 	"github.com/onlyangel/apihandlers"
 	"google.golang.org/appengine/log"
-	"net/http"
+
+	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/tools"
 )
 
 func identification_handlers() {

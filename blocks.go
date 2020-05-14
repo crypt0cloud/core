@@ -5,17 +5,19 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	api "github.com/onlyangel/apihandlers"
-	"golang.org/x/crypto/ed25519"
-	"google.golang.org/appengine/log"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"time"
+
+	api "github.com/onlyangel/apihandlers"
+	"golang.org/x/crypto/ed25519"
+	"google.golang.org/appengine/log"
+
 	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/connections"
 	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/crypto"
 	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/tools"
 	md "source.cloud.google.com/crypt0cloud-app/crypt0cloud/model_go"
-	"time"
 )
 
 func block_handlers() {

@@ -2,15 +2,17 @@ package core
 
 import (
 	"fmt"
-	"github.com/onlyangel/apihandlers"
 	"log"
 	"net/http"
+	"time"
+
+	"github.com/onlyangel/apihandlers"
+
 	_ "source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/coordinator"
 	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/crypto"
 	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/crypto/ed_25519"
 	_ "source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/query"
 	md "source.cloud.google.com/crypt0cloud-app/crypt0cloud/model_go"
-	"time"
 )
 
 var model md.ModelConnector

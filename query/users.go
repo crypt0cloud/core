@@ -2,8 +2,9 @@ package query
 
 import (
 	"fmt"
-	"github.com/onlyangel/apihandlers"
 	"net/http"
+
+	"github.com/onlyangel/apihandlers"
 )
 
 func init() {

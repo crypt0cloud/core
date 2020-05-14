@@ -3,13 +3,14 @@ package connections
 import (
 	"bytes"
 	"encoding/json"
+	"io/ioutil"
 	"log"
+	"net/http"
+
 	gae "source.cloud.google.com/crypt0cloud-app/crypt0cloud/model_gae"
 	md "source.cloud.google.com/crypt0cloud-app/crypt0cloud/model_go"
 
 	"github.com/onlyangel/apihandlers"
-	"io/ioutil"
-	"net/http"
 )
 
 var model md.ModelConnector

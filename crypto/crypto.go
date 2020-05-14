@@ -6,9 +6,11 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
+
 	"github.com/onlyangel/apihandlers"
 	"golang.org/x/crypto/ed25519"
-	"io"
+
 	model "source.cloud.google.com/crypt0cloud-app/crypt0cloud/model_go"
 )
 

@@ -1,11 +1,13 @@
 package ed_25519
 
 import (
-	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/crypto"
-	"github.com/onlyangel/apihandlers"
-	"golang.org/x/crypto/ed25519"
 	"math/rand"
 	"time"
+
+	"github.com/onlyangel/apihandlers"
+	"golang.org/x/crypto/ed25519"
+
+	"source.cloud.google.com/crypt0cloud-app/crypt0cloud/core/crypto"
 )
 
 func GetNewKeyPair() (string, string) {

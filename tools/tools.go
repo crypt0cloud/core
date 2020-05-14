@@ -3,11 +3,12 @@ package tools
 import (
 	"encoding/json"
 	"fmt"
+	"html"
+	"net/http"
+
 	"github.com/onlyangel/apihandlers"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine"
-	"html"
-	"net/http"
 )
 
 func Context(r *http.Request) context.Context {
