@@ -9,8 +9,8 @@ import (
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/log"
 
-	"github.com/crypt0cloud/core/crypto"
 	"github.com/crypt0cloud/core/tools"
+	crypto "github.com/crypt0cloud/crypto_go"
 )
 
 func setup_hanlers() {

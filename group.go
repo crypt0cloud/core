@@ -10,8 +10,8 @@ import (
 	"github.com/onlyangel/apihandlers"
 	"google.golang.org/appengine/log"
 
-	"github.com/crypt0cloud/core/crypto"
 	"github.com/crypt0cloud/core/tools"
+	crypto "github.com/crypt0cloud/crypto_go"
 
 	md "github.com/crypt0cloud/model_go"
 

@@ -9,9 +9,9 @@ import (
 	"github.com/onlyangel/apihandlers"
 
 	_ "github.com/crypt0cloud/core/coordinator"
-	"github.com/crypt0cloud/core/crypto"
-	"github.com/crypt0cloud/core/crypto/ed_25519"
 	_ "github.com/crypt0cloud/core/query"
+	crypto "github.com/crypt0cloud/crypto_go"
+	"github.com/crypt0cloud/crypto_go/ed_25519"
 	md "github.com/crypt0cloud/model_go"
 )
 

@@ -17,9 +17,9 @@ import (
 	"google.golang.org/appengine/log"
 
 	"github.com/crypt0cloud/core/connections"
-	"github.com/crypt0cloud/core/crypto"
-	"github.com/crypt0cloud/core/crypto/signing"
 	"github.com/crypt0cloud/core/tools"
+	crypto "github.com/crypt0cloud/crypto_go"
+	"github.com/crypt0cloud/crypto_go/signing"
 
 	md "github.com/crypt0cloud/model_go"
 )
