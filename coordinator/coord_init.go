@@ -16,10 +16,11 @@ import (
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/log"
 
-	"github.com/crypt0cloud/core/connections"
-	"github.com/crypt0cloud/core/tools"
 	crypto "github.com/crypt0cloud/crypto_go"
 	"github.com/crypt0cloud/crypto_go/signing"
+
+	"github.com/crypt0cloud/core/connections"
+	"github.com/crypt0cloud/core/tools"
 
 	md "github.com/crypt0cloud/model_go"
 )

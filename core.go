@@ -8,11 +8,12 @@ import (
 
 	"github.com/onlyangel/apihandlers"
 
-	_ "github.com/crypt0cloud/core/coordinator"
-	_ "github.com/crypt0cloud/core/query"
 	crypto "github.com/crypt0cloud/crypto_go"
 	"github.com/crypt0cloud/crypto_go/ed_25519"
 	md "github.com/crypt0cloud/model_go"
+
+	_ "github.com/crypt0cloud/core/coordinator"
+	_ "github.com/crypt0cloud/core/query"
 )
 
 var model md.ModelConnector
