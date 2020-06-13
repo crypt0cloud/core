@@ -1,0 +1,11 @@
+# https://taskfile.dev
+
+version: '2'
+
+tasks:
+  upgrade-mod:
+    cmds:
+      - go env -w GOPRIVATE=github.com/crypt0cloud/model_gae
+      - go get -u ./...
+      - git add go.mod go.sum
+      - git commit -m "automatic upgrading go.mod"
