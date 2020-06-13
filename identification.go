@@ -23,6 +23,7 @@ func identification_getNodeId(w http.ResponseWriter, r *http.Request) {
 
 	// CHANGE TO NODE IDENTIFICATION AND CHANGE MYSELF TO FALSE
 	block.Myself = false
+	block.PrivateKey = "NA"
 
 	log.Debugf(ctx, "%v", block)
 
