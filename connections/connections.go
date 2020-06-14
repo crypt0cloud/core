@@ -7,7 +7,7 @@ import (
 	"log"
 	"net/http"
 
-	gae "github.com/crypt0cloud/model_gae"
+	gae "github.com/crypt0cloud/core/models/model_gae"
 	md "github.com/crypt0cloud/model_go"
 
 	"github.com/onlyangel/apihandlers"
