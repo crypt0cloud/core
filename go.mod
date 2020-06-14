@@ -4,7 +4,6 @@ go 1.12
 
 require (
 	github.com/crypt0cloud/crypto_go v0.0.0-20200523053333-a2bddafb4206
-	github.com/crypt0cloud/model_gae v0.0.0-20200523053333-bf3ea81f4b73
 	github.com/crypt0cloud/model_go v0.0.0-20200613153850-c4d6e94b2b49
 	github.com/go-errors/errors v1.1.1 // indirect
 	github.com/golang/protobuf v1.4.2 // indirect
