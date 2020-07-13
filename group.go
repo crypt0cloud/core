@@ -3,6 +3,7 @@ package core
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/crypt0cloud/core/connections"
 	"net/http"
 	"strconv"
 	"time"
@@ -83,6 +84,12 @@ func group_sign_signingRequest(w http.ResponseWriter, r *http.Request) {
 
 	if t.Parent != signreq.Parent || t.SignKind != signreq.SignKind || t.AppID != signreq.AppID || t.Payload != signreq.Payload || t.Callback != signreq.Callback || !tools.IsStringArrayEqual(t.SignerKinds, signreq.SignerKinds) {
 		apihandlers.PanicWithMsg("Values of the signing request are different from the parent transaction")
+	}
+
+	coord_key := db.GetCoordinatorKey(r)
+	sino := connections.ValidateTransactionWithPeers(r, t, coord_key.FromNode)
+	if !sino {
+		apihandlers.PanicWithMsg("Peer virification invalid")
 	}
 
 	t = db.InsertTransaction(r, t)
