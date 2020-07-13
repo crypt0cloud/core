@@ -49,7 +49,7 @@ func group_createGroup(w http.ResponseWriter, r *http.Request) {
 		apihandlers.PanicWithMsg("SignerKinds had to have at least one SignerKind")
 	}
 
-	if !db.BlockExists(t.BlockSign) {
+	if !db.BlockExists(t.BlockSign) { // todo IS A BLOCK VALID ( THE LAST ONE )
 		apihandlers.PanicWithMsg("Error in BlockSign")
 	}
 
