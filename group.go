@@ -49,6 +49,10 @@ func group_createGroup(w http.ResponseWriter, r *http.Request) {
 		apihandlers.PanicWithMsg("SignerKinds had to have at least one SignerKind")
 	}
 
+	if !db.BlockExists(t.BlockSign) {
+		apihandlers.PanicWithMsg("Error in BlockSign")
+	}
+
 	if !db.AppIdExists(r, t.AppID) {
 		apihandlers.PanicWithMsg("AppID doesnt exists")
 	}
