@@ -443,6 +443,15 @@ func (d DatabaseDatastore) BlockTransactionsCursor(sign string) model.StorageCur
 
 	return ret
 }
+
+func (d DatabaseDatastore) BlockExists(BlockSign string) bool {
+
+	q := datastore.NewQuery("Block").Filter("Sign = ", BlockSign).Limit(1)
+	count, err := q.Count(d.ctx)
+	api.PanicIfNotNil(err)
+	return count > 0
+}
+
 func (d DatabaseDatastore) NextTransactionSign(cursor model.StorageCursor) ([]byte, bool) {
 	var p model.Transaction
 	_, err := cursor.GAE.Next(&p)
