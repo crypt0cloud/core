@@ -68,6 +68,12 @@ func group_createGroup(w http.ResponseWriter, r *http.Request) {
 		apihandlers.PanicWithMsg("Different Origin Node")
 	}
 
+	coord_key := db.GetCoordinatorKey(r)
+	sino := connections.ValidateTransactionWithPeers(r, t, coord_key.FromNode)
+	if !sino {
+		apihandlers.PanicWithMsg("Peer virification invalid")
+	}
+
 	t = db.InsertTransaction(r, t)
 	jsonstr, err := json.Marshal(t)
 	apihandlers.PanicIfNotNil(err)
