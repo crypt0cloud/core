@@ -3,15 +3,12 @@ package core
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/onlyangel/apihandlers"
-	"google.golang.org/appengine"
-	"google.golang.org/appengine/log"
 
 	crypto "github.com/crypt0cloud/crypto_go"
-
-	"github.com/crypt0cloud/core/tools"
 )
 
 func setup_hanlers() {
@@ -34,14 +31,14 @@ func setup_setInitialNodeRegistration(w http.ResponseWriter, r *http.Request) {
 	db := model.Open(r, "")
 	t := crypto.Validate_criptoTransaction(r.Body)
 
-	log.Infof(appengine.NewContext(r), "NODE REGISTRATION: %+v", t)
+	log.Printf("NODE REGISTRATION: %+v", t)
 
 	if t.SignKind != "__REGISTERNODE" {
 		apihandlers.PanicWithMsg("Not Valid")
 	}
 
-	log.Infof(tools.Context(r), "SINGLE TRANSACTION")
-	log.Infof(tools.Context(r), "%+v", t)
+	log.Printf("SINGLE TRANSACTION")
+	log.Printf("%+v", t)
 
 	if t.Parent != "" {
 		apihandlers.PanicWithMsg("Single transaction should have a parent = \"\"")

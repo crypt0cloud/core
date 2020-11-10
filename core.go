@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"github.com/crypt0cloud/core/coordinator"
 	"log"
 	"net/http"
 	"time"
@@ -19,11 +20,6 @@ import (
 var model md.ModelConnector
 
 func init() {
-	var err error
-	model, err = md.Open("datastore")
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	http.HandleFunc("/ping", apihandlers.RecoverApi(pong))
 	http.HandleFunc("/_ah/warmup", apihandlers.RecoverApi(warmup))
@@ -38,6 +34,16 @@ func init() {
 	block_handlers()
 
 	query_handlers()
+}
+
+func InitDB() error {
+	var err error
+	var mo *md.ModelConnector
+	mo, err = md.OpenDefault()
+	model = *mo
+	log.Printf("initdb: %+v", mo)
+	coordinator.InitDB()
+	return err
 }
 
 func warmup(w http.ResponseWriter, r *http.Request) {

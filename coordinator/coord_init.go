@@ -30,11 +30,7 @@ var model md.ModelConnector
 var BLOCK_DURATION time.Duration
 
 func init() {
-	var err error
-	model, err = md.Open("datastore")
-	if err != nil {
-		//TODO ERROR
-	}
+
 	//http.HandleFunc("/api/api",api_handler)
 	http.HandleFunc("/api/v1/coord/register_masterkey", apihandlers.RecoverApi(coord_registerMasterKey))
 	http.HandleFunc("/api/v1/coord/register_nodes", apihandlers.RecoverApi(coord_registerNewNode))
@@ -49,6 +45,14 @@ func init() {
 	http.HandleFunc("/api/v1/coord/nodeBlockSigning", apihandlers.RecoverApi(coord_handleNodeBlockSigning))
 
 	BLOCK_DURATION, _ = time.ParseDuration("5m")
+}
+
+func InitDB() error {
+	var err error
+	var mo *md.ModelConnector
+	mo, err = md.OpenDefault()
+	model = *mo
+	return err
 }
 
 func coord_handleNodeBlockSigning(w http.ResponseWriter, r *http.Request) {

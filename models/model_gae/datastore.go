@@ -23,6 +23,10 @@ type ConnectorDatastore struct {
 	model.ModelDatabase
 }
 
+func (d ConnectorDatastore) SetConnectionString(connect string) {
+
+}
+
 func (d ConnectorDatastore) Open(r *http.Request, config string) model.ModelDatabase {
 	return DatabaseDatastore{
 		ctx: tools.Context(r),

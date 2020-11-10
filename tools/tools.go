@@ -12,7 +12,12 @@ import (
 )
 
 func Context(r *http.Request) context.Context {
-	return appengine.NewContext(r)
+	if r != nil {
+		return appengine.NewContext(r)
+	} else {
+		return context.Background()
+	}
+
 }
 
 func FormValueEscaped(r *http.Request, variable string) string {
