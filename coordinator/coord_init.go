@@ -13,8 +13,7 @@ import (
 
 	"github.com/onlyangel/apihandlers"
 	"golang.org/x/crypto/ed25519"
-	"google.golang.org/appengine"
-	"google.golang.org/appengine/log"
+	"log"
 
 	crypto "github.com/crypt0cloud/crypto_go"
 	"github.com/crypt0cloud/crypto_go/signing"
@@ -63,8 +62,7 @@ func coord_handleNodeBlockSigning(w http.ResponseWriter, r *http.Request) {
 	apihandlers.PanicIfNotNil(err)
 	defer r.Body.Close()
 
-	ctx := appengine.NewContext(r)
-	log.Infof(ctx, "BLOCK TO SIGN: %+v", t)
+	log.Printf("BLOCK TO SIGN: %+v", t)
 
 	db := model.Open(r, "")
 	localt := db.Coord_GetLocalBlockRequestForInstance(t)
@@ -133,7 +131,6 @@ func coord_handleBlockCalculationAuthorization(w http.ResponseWriter, r *http.Re
 
 	arr := db.Coord_GetRandomNodeIdentification(0)
 
-	ctx := tools.Context(r)
 	for _, node := range arr {
 		fi := &md.BlockRequestForInstance{
 			BlockRequest: blreq.IdVal,
@@ -155,7 +152,7 @@ func coord_handleBlockCalculationAuthorization(w http.ResponseWriter, r *http.Re
 		connections.PostRemote(r, url, jsonstr)
 		fmt.Fprint(w, string(jsonstr))
 
-		log.Infof(ctx, "\n\n\n\nENVIANDO A: %s\n%s\n", url, string(jsonstr))
+		log.Printf("\n\n\n\nENVIANDO A: %s\n%s\n", url, string(jsonstr))
 	}
 
 	// generate authentication
@@ -194,7 +191,6 @@ func coord_registerMasterKey(w http.ResponseWriter, r *http.Request) {
 }
 
 func coord_registerNewNode(w http.ResponseWriter, r *http.Request) {
-	ctx := tools.Context(r)
 	db := model.Open(r, "")
 	mk := db.Coord_GetKey()
 	myNodeID := db.GetNodeId()
@@ -210,7 +206,7 @@ func coord_registerNewNode(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, cn)
 	apihandlers.PanicIfNotNil(err)
 
-	log.Infof(ctx, "%+v", cn)
+	log.Printf("%+v", cn)
 
 	sign, err := base64.StdEncoding.DecodeString(cn.Sign)
 	apihandlers.PanicIfNotNil(err)
@@ -246,7 +242,7 @@ func coord_registerNewNode(w http.ResponseWriter, r *http.Request) {
 		err = json.Unmarshal(response, &arr)
 		apihandlers.PanicIfNotNil(err)
 
-		log.Infof(ctx, "NODEARR: %+v", arr[0])
+		log.Printf("NODEARR: %+v", arr[0])
 
 		err = json.Unmarshal(response, &arr)
 		apihandlers.PanicIfNotNil(err)
@@ -285,8 +281,8 @@ func coord_registerNewNode(w http.ResponseWriter, r *http.Request) {
 		traurl := "http://" + url + "/api/setup/set_initial_node_registration"
 		response = connections.PostRemote(r, traurl, jsonstr)
 
-		log.Debugf(ctx, "Transaction response from: '%s'", traurl)
-		log.Debugf(ctx, string(response))
+		log.Printf("Transaction response from: '%s'", traurl)
+		log.Printf(string(response))
 
 		err = json.Unmarshal(response, transaction)
 		apihandlers.PanicIfNotNil(err)
@@ -434,7 +430,7 @@ func coord_addApp(w http.ResponseWriter, r *http.Request) {
 	//Validate criptographically transaction body
 	t := crypto.Validate_criptoTransaction(r.Body)
 
-	log.Infof(tools.Context(r), "REceiving transaction order: %+v", t)
+	log.Printf("REceiving transaction order: %+v", t)
 
 	// Validate transaction data
 	if t.SignKind != "NewApp" {
@@ -473,7 +469,7 @@ func coord_addApp(w http.ResponseWriter, r *http.Request) {
 	// Create the app in all the nodes
 	for _, node := range arr {
 
-		log.Infof(tools.Context(r), "%+v", node)
+		log.Printf("%+v", node)
 
 		resp, err := connections.CallRemote(r, fmt.Sprintf("http://%s/api/v1/block/get_lasts", node.Endpoint))
 		apihandlers.PanicIfNotNil(err)
@@ -500,7 +496,7 @@ func coord_addApp(w http.ResponseWriter, r *http.Request) {
 		jsonstr, err := json.Marshal(transaction)
 		apihandlers.PanicIfNotNil(err)
 
-		log.Infof(tools.Context(r), "Adding app: %+v", transaction)
+		log.Printf("Adding app: %+v", transaction)
 
 		response := connections.PostRemote(r, "http://"+node.Endpoint+"/api/v1/post_single_transaction", jsonstr)
 
